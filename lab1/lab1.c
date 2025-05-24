@@ -47,4 +47,6 @@ int main() {
 }
 
 // Optional1: Works fine with spaces but tab counts as new character, so it is
-// added in the tokens Optional2: Done Optional3: Done
+// added in the tokens
+// Optional2: Done
+// Optional3: Done
