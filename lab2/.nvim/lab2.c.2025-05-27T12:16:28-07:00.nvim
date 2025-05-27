@@ -1,0 +1,18 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int execution() {
+
+
+
+
+
+  return 1;
+}
+
+int main() {
+
+  char *buffer;
+  

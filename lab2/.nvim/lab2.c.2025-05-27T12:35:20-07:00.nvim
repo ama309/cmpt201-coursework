@@ -1,0 +1,39 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int execution(char *buffer) {
+
+  if (strcmp(buffer, "\n") == 0) {
+    printf("EXITING");
+    return -1;
+  }
+  printf("NOT EXITING");
+  printf("   %s   ", buffer);
+
+  return 1;
+}
+
+int main() {
+
+  char *buffer;
+  size_t size;
+  ssize_t line;
+  int exit = 1;
+
+  while (exit != -1) {
+    printf("Enter programs to run:\n> ");
+    buffer = NULL;
+    size = 0;
+    line = getline(&buffer, &size, stdin);
+
+    if (line != -1) {
+      exit = execution(buffer);
+    } else {
+      exit = -1;
+    }
+    free(buffer);
+  }
+  return 0;
+}

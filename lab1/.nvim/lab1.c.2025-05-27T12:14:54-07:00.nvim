@@ -44,7 +44,6 @@ int main() {
     }
     free(buffer);
   }
-  return 0;
 }
 
 // Optional1: Works fine with spaces but tab counts as new character, so it is

@@ -1,0 +1,65 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <unistd.h>
+
+#include <sys/wait.h>
+
+int main() {
+  // set variables
+  char *buffer;
+  size_t size;
+  ssize_t line;
+  int exitval = 1;
+
+  pid_t pid;
+  int wstatus;
+
+  while (exitval != -1) {
+    // set variables and print prompt
+    printf("Enter programs to run:\n> ");
+    buffer = NULL;
+    size = 0;
+    line = getline(&buffer, &size, stdin);
+
+    // if line properly allocated
+    if (line != -1) {
+
+      pid = fork();
+
+      // parent block
+      if (pid) {
+        wstatus = 0;
+        waitpid(pid, &wstatus, 0);
+
+        // if normal exit, check if exiting or not
+        if (WIFEXITED(wstatus)) {
+          exitval = WEXITSTATUS(wstatus);
+          // else print message and loop again
+        } else {
+          printf("PID failure exit.");
+        }
+
+        // child block
+      } else {
+        printf("  %s  ", buffer);
+        if (strcmp(buffer, "\n") == 0) {
+          printf("EXITING\n");
+          exit(-1);
+        }
+        if (execl(buffer, "ls", (char *)NULL) == -1) {
+          printf("Exec failure\n");
+          exit(1);
+        }
+      }
+
+      // line error, exit program
+    } else {
+      exitval = -1;
+    }
+    free(buffer);
+  }
+  return 0;
+}

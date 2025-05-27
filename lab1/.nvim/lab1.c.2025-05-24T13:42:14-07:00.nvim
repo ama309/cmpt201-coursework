@@ -7,7 +7,7 @@
 int tokenize(char *buffer, char *delimiter) {
   // get first token and see if exit character
   char *saveptr;
-  char *token = strtok_r(buffer, delimiter, &saveptr);
+  char *token = strtok_r(buffer, " ", &saveptr);
   if (strcmp(token, "\n") == 0) {
     return -1;
   }
@@ -16,7 +16,7 @@ int tokenize(char *buffer, char *delimiter) {
   printf("Tokens:");
   while (token != NULL) {
     printf("\n  %s", token);
-    token = strtok_r(NULL, delimiter, &saveptr);
+    token = strtok_r(NULL, " ", &saveptr);
   }
   return 1;
 }
@@ -44,10 +44,9 @@ int main() {
     }
     free(buffer);
   }
-  return 0;
 }
 
 // Optional1: Works fine with spaces but tab counts as new character, so it is
-// added in the tokens
-// Optional2: Done
+// added in the tokens 
+// Optional2: Done 
 // Optional3: Done
