@@ -1,0 +1,118 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// create node struct
+typedef struct Node {
+  char *data;
+  struct Node *next;
+} Node;
+
+// create linked list struct
+typedef struct LinkedList {
+  int length;
+  struct Node *head;
+  struct Node *tail;
+} LinkedList;
+
+// initializer function (basically a constructor)
+void initializeList(LinkedList *list) {
+  list->head = NULL;
+  list->tail = NULL;
+  list->length = 0;
+}
+
+// delete memory of list function
+void deleteList(LinkedList *list) {
+  Node *temp = list->head;
+  while (temp != NULL) {
+    Node *next = temp->next;
+    free(temp->data);
+    free(temp);
+    temp = next;
+  }
+  free(list);
+}
+
+// function to entirely handle adding a node
+void addNode(LinkedList *list, char *value) {
+  // allocate new node and make sure allocates successfully
+  Node *newnode = malloc(sizeof(Node));
+  if (newnode == NULL) {
+    return;
+  }
+  newnode->data = value;
+  newnode->next = NULL;
+
+  // if first value, increment length and set as head/tail
+  if (list->head == NULL) {
+    list->head = newnode;
+    list->tail = newnode;
+    list->length++;
+  } else {
+    // else set as tail nore
+    list->tail->next = newnode;
+    list->tail = newnode;
+
+    // if max size already, delete head, else increment size
+    if (list->length == 5) {
+      Node *temp = list->head;
+      list->head = list->head->next;
+      free(temp);
+    } else {
+      list->length++;
+    }
+  }
+}
+
+// function to print entire linked list
+void printList(LinkedList *list) {
+  Node *temp = list->head;
+  while (temp != NULL) {
+    printf("%s", temp->data);
+    temp = temp->next;
+  }
+}
+
+// main
+int main() {
+  // set variables
+  char *buffer;
+  size_t size;
+  ssize_t line;
+  int exit = 1;
+
+  // allocate list, check if successful, then initialize values
+  LinkedList *llist = malloc(sizeof(LinkedList));
+  if (llist == NULL) {
+    exit = -1;
+  }
+  initializeList(llist);
+
+  // create while loop for until user presses enter
+  while (exit != -1) {
+    // get lines
+    printf("Enter input: ");
+    buffer = NULL;
+    size = 0;
+    line = getline(&buffer, &size, stdin);
+
+    // check if exit, else add node and see if printing
+    if (line == -1) {
+      exit = -1;
+    } else if strcmp(buffer, "\n") != 0) {
+      addNode(llist, buffer);
+      if (strcmp(buffer, "print\n") == 0) {
+        printList(llist);
+      }
+    }
+  }
+
+  // free memory
+  free(buffer);
+  deleteList(llist);
+  return 0;
+}
+
+//Optional3: Done

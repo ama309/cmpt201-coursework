@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node {
+  char *data;
+  struct Node *next;
+};
+
+class LinkedList {
+private:
+  int length;
+  Node *head;
+  Node *tail;
+
+public:
+  LinkedList() {
+    head = NULL;
+    tail = NULL;
+    length = 0;
+  }
+  void addNode(char *value) {
+    Node *newNode = new Node;
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+      head = newNode;
+      tail = newNode;
+      length++
+
+    } else {
+      tail->next = newNode;
+      tail = tail->next;
+
+      if (length == 5) {
+        Node *temp;
+        temp = head;
+        head = head->next;
+        free(temp->data);
+        free(temp->next);
+      } else {
+        length++;
+      }
+    }
+  }
+  void printList() {
+    Node *temp = head;
+    while (temp != NULL) {
+      printf("%s", temp->data);
+      temp = head->next;
+    }
+  }
+};
+
+int main() { return 0; }

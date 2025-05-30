@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Node {
+  char *data;
+  struct Node *next;
+} Node;
+
+typedef struct LinkedList {
+  int length;
+  struct Node *head;
+  struct Node *tail;
+} LinkedList;
+
+void addNode(LinkedList *list, char *value) {
+  Node *newNode;
+  newNode->data = value;
+  newNode->next = NULL;
+
+  if (list->head == NULL) {
+    list->head = newNode;
+    list->tail = newNode;
+    list->length = 1;
+
+  } else {
+    list->tail->next = newNode;
+    list->tail = list->tail->next;
+
+    if (list->length == 5) {
+      Node *temp;
+      temp = list->head;
+      list->head = list->head->next;
+      free(temp->data);
+      free(temp->next);
+    } else {
+      length++;
+    }
+  }
+}
+void printList(struct LinkedList *list) {
+  Node *temp = list->head;
+  while (temp != NULL) {
+    printf("%s", temp->data);
+    temp = list->head->next;
+  }
+}
+
+int main() { return 0; }
