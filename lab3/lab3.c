@@ -32,11 +32,18 @@ void deleteList(LinkedList *list) {
     free(temp);
     temp = next;
   }
+  free(list);
 }
 
 // clear function for optional 3
 void clear(LinkedList *list) {
-  deleteList(list);
+  Node *temp = list->head;
+  while (temp != NULL) {
+    Node *next = temp->next;
+    free(temp->data);
+    free(temp);
+    temp = next;
+  }
   list->head = NULL;
   list->tail = NULL;
   list->length = 0;
@@ -85,7 +92,7 @@ void printList(LinkedList *list) {
 // main loop
 int main() {
   // set variables
-  char *buffer;
+  char *buffer = NULL;
   size_t size;
   ssize_t line;
   int exit = 1;
@@ -94,8 +101,9 @@ int main() {
   LinkedList *llist = malloc(sizeof(LinkedList));
   if (llist == NULL) {
     exit = -1;
+  } else {
+    initializeList(llist);
   }
-  initializeList(llist);
 
   // create while loop for until user presses enter
   while (exit != -1) {
@@ -119,9 +127,12 @@ int main() {
   }
 
   // free memory
-  free(buffer);
-  deleteList(llist);
-  free(llist);
+  if (buffer != NULL) {
+    free(buffer);
+  }
+  if (llist != NULL) {
+    deleteList(llist);
+  }
   return 0;
 }
 
