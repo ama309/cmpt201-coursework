@@ -1,0 +1,94 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+int BUF_SIZE = 129;
+
+// define header for the block
+struct header {
+  uint64_t size;
+  struct header *next;
+};
+
+// initialize function to set values in header
+void initializeHeader(struct header *header, uint64_t size,
+                      struct header *next) {
+  header->size = size;
+  header->next = next;
+}
+
+// set memory function of block and value
+void setMemory(struct header *block, int value) {
+  // cast block to char for byte size increments instead of struct header
+  // increments, set as value, and do it rest of the block times (not including
+  // header)
+  memset((char *)block + sizeof(struct header), value,
+         block->size - sizeof(struct header));
+}
+
+// function to handle errors
+void handle_error(const char *message) {
+  printf("Error: %s\n", message);
+  exit(1);
+}
+
+// given print function
+void print_out(char *format, void *data, size_t data_size) {
+  char buf[BUF_SIZE];
+  ssize_t len = snprintf(buf, BUF_SIZE, format,
+                         data_size == sizeof(uint64_t) ? *(uint64_t *)data
+                                                       : *(void **)data);
+  if (len < 0) {
+    handle_error("snprintf");
+  }
+  write(STDOUT_FILENO, buf, len);
+}
+
+// main function
+int main() {
+  // create a starting address and create the 2 blocks from that address
+  void *startaddr = sbrk(256);
+  struct header *firstblock = (struct header *)startaddr;
+  struct header *secondblock = (void *)startaddr + 128;
+
+  // initialize headers
+  initializeHeader(firstblock, 128, NULL);
+  initializeHeader(secondblock, 128, firstblock);
+
+  // set memory of blocks
+  setMemory(firstblock, 1);
+  setMemory(secondblock, 1);
+
+  // print in specified format with given function
+  print_out("first block:       %p\n", &firstblock, sizeof(&firstblock));
+  print_out("second block:      %p\n", &secondblock, sizeof(&secondblock));
+  print_out("first block size:  %lu\n", (void *)&firstblock->size,
+            sizeof(&firstblock->size));
+  print_out("first block next:  %p\n", &firstblock->next,
+            sizeof(&firstblock->next));
+  print_out("second block size: %lu\n", (void *)&secondblock->size,
+            sizeof(&secondblock->size));
+  print_out("second block next: %p\n", &secondblock->next,
+            sizeof(&secondblock->next));
+
+  // print out all the values in the block
+  //unsigned char *byte = (unsigned char *)secondblock;
+  //for (int i = sizeof(struct header); i < 128; i++) {
+    //print_out("%02x\n", &(firstblock[i]), sizeof(uint64_t));
+  //}
+  //for (int i = sizeof(struct header); i < 128; i++) {
+    //print_out("%01x\n", (void *)&byte[i], sizeof(uint64_t));
+  //}
+  // unsigned char *byte = (unsigned char *)firstblock;
+  for (int i = sizeof(struct header); i < 128; i++) {
+    printf("%x\n", byte[i]);
+  }
+  // byte = (unsigned char *)secondblock;
+  for (int i = sizeof(struct header); i < 128; i++) {
+    printf("%x\n", byte[i]);
+  }
+
+  return 0;
+}

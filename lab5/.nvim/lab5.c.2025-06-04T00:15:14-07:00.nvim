@@ -1,0 +1,125 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+struct header {
+  uint64_t size;
+  struct header *next;
+  int id;
+};
+
+void initialize_block(struct header *block, uint64_t size, struct header *next,
+                      int id) {
+  block->size = size;
+  block->next = next;
+  block->id = id;
+}
+
+int find_first_fit(struct header *free_list_ptr, uint64_t size) {
+  // TODO: Implement first fit
+  // return first id with >= size
+  struct header *traverse = free_list_ptr;
+  while (traverse != NULL) {
+    if (traverse->size >= size) {
+      return traverse->id;
+    }
+    traverse = traverse->next;
+  }
+  // returns -1 if no block is found
+  return -1;
+}
+
+int find_best_fit(struct header *free_list_ptr, uint64_t size) {
+  int best_fit_id = -1;
+  // TODO: Implement best fit
+  uint64_t best_fit_val = UINT64_MAX;
+  struct header *traverse = free_list_ptr;
+  // update best_val and id only if >= size and either first valid or better val
+  while (traverse != NULL) {
+    if (traverse->size >= size && ((best_fit_val == UINT64_MAX) ||
+                                   (traverse->size - size < best_fit_val))) {
+      // update and traverse, then finally return best id
+      best_fit_id = traverse->id;
+      best_fit_val = traverse->size - size;
+    }
+    traverse = traverse->next;
+  }
+  // return -1 if no viable spots, else the best fit
+  return best_fit_id;
+}
+
+int find_worst_fit(struct header *free_list_ptr, uint64_t size) {
+  int worst_fit_id = -1;
+  // TODO: Implement worst fit
+  uint64_t worst_fit_val = UINT64_MAX;
+  struct header *traverse = free_list_ptr;
+  // update worst_val and id only if >= size and either first valid or worse val
+  while (traverse != NULL) {
+    if (traverse->size >= size && ((worst_fit_val == UINT64_MAX) ||
+                                   (traverse->size - size > worst_fit_val))) {
+      // update and traverse, then finally return worst id
+      worst_fit_id = traverse->id;
+      worst_fit_val = traverse->size - size;
+    }
+    traverse = traverse->next;
+  }
+  // return -1 if no viable spots, else the worst fit
+  return worst_fit_id;
+}
+
+int main(void) {
+
+  struct header *free_block1 = (struct header *)malloc(sizeof(struct header));
+  struct header *free_block2 = (struct header *)malloc(sizeof(struct header));
+  struct header *free_block3 = (struct header *)malloc(sizeof(struct header));
+  struct header *free_block4 = (struct header *)malloc(sizeof(struct header));
+  struct header *free_block5 = (struct header *)malloc(sizeof(struct header));
+
+  initialize_block(free_block1, 6, free_block2, 1);
+  initialize_block(free_block2, 12, free_block3, 2);
+  initialize_block(free_block3, 24, free_block4, 3);
+  initialize_block(free_block4, 8, free_block5, 4);
+  initialize_block(free_block5, 4, NULL, 5);
+
+  struct header *free_list_ptr = free_block1;
+
+  int first_fit_id = find_first_fit(free_list_ptr, 7);
+  int best_fit_id = find_best_fit(free_list_ptr, 7);
+  int worst_fit_id = find_worst_fit(free_list_ptr, 7);
+
+  // TODO: Print out the IDs
+  printf("The ID for First-Fit algorithm is: %d\n", first_fit_id);
+  printf("The ID for Best-Fit algorithm is: %d\n", best_fit_id);
+  printf("The ID for Worst-Fit algorithm is: %d\n", worst_fit_id);
+
+  // free the malloc'ed structs and return 0
+  free(free_block1);
+  free(free_block2);
+  free(free_block3);
+  free(free_block4);
+  free(free_block5);
+
+  return 0;
+}
+
+// Coalescing algorithm:
+// 
+// when new block freed:
+// sides = 2;
+// while (node not null):
+//  if (node->startptr == freed->endptr):
+//    combine block from freed->startptr to node->endptr;
+//    sides--;
+//  else if (node->endptr == freed->startptr):
+//    combine block from node->startptr to freed->endptr;
+//    sides--;
+//  else if (sides == 0):
+//    return;
+//  next node;
+//
+//  this assumes some way to calculate where the freed blocks endptr is, whether by
+//  size of block given or endptr given or something. sides is there since if both sides of
+//  the block have been coalesced, there cant be more done, and we can break out of it
+//
+//  on sample given: n->startptr == z->endptr, so combine n and z, then b isnt connected at all, then
+//  m->endptr == z->startptr so combine m and z, so end up with b block and one new big free block

@@ -1,0 +1,78 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <sys/wait.h>
+#include <unistd.h>
+
+// main loop
+int main() {
+  // set variables
+  char *buffer;
+  size_t size;
+  ssize_t line;
+  int exitval = 1;
+
+  char *saveptr;
+  pid_t pid;
+  int wstatus;
+
+  // loop until exit
+  while (exitval != 255) {
+    printf("Enter programs to run:\n> ");
+    buffer = NULL;
+    size = 0;
+    line = getline(&buffer, &size, stdin);
+
+    // if line properly allocated, create fork
+    if (line != -1) {
+      pid = fork();
+
+      // parent block
+      if (pid) {
+        // get status
+        wstatus = 0;
+        waitpid(pid, &wstatus, 0);
+
+        // if normal exit, check if exiting loop or not
+        if (WIFEXITED(wstatus)) {
+          exitval = WEXITSTATUS(wstatus);
+
+          // else print message and loop again
+        } else {
+          printf("PID failure exit.\n");
+        }
+
+        // child block
+      } else {
+        // check if exit
+        if (strcmp(buffer, "\n") == 0 || strcmp(buffer, "exit\n") == 0) {
+          exit(-1);
+
+          // else not exit, remove \n in path
+        } else {
+          char *path = strtok_r(buffer, "\n", &saveptr);
+
+          // execution fail and exit explicitly, otherwise terminates on exec
+          // call
+          if (execl(path, path, (char *)NULL) == -1) {
+            printf("Exec failure\n");
+            exit(1);
+          }
+        }
+      }
+
+      // line error, exit program
+    } else {
+      exitval = 255;
+    }
+    // free buffer memory
+    free(buffer);
+  }
+  return 0;
+}
+
+// Optional1: Done
+// Optional2: Done
+// Optional3: No it does not, since the spaces invalidate the path.

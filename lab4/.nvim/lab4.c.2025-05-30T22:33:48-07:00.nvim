@@ -1,0 +1,48 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+struct header {
+  uint64_t size;
+  struct header *next;
+};
+
+void initializeHeader(struct header *header, uint64_t size,
+                      struct header *next) {
+  header->size = size;
+  header->next = next;
+}
+
+int main() {
+  void *startaddr = sbrk(256);
+  struct header *secondblock = (struct header *)startaddr;
+  struct header *firstblock = (void *)startaddr + 128;
+
+  initializeHeader(firstblock, 128, NULL);
+  initializeHeader(secondblock, 128, firstblock);
+
+  memset((char *)firstblock + sizeof(struct header), 0,
+         128 - sizeof(struct header));
+  memset((char *)secondblock + sizeof(struct header), 1,
+         128 - sizeof(struct header));
+
+  printf("address of new mem location: %p\n", firstblock);
+
+  printf("first block:       %p\n", firstblock);
+  printf("second block:      %p\n", secondblock);
+  printf("first block size:  %lu\n", firstblock->size);
+  printf("first block next:  %p\n", firstblock->next);
+  printf("second block size: %lu\n", secondblock->size);
+  printf("second block next: %p\n", secondblock->next);
+
+  for (int i = sizeof(struct header) - 1; i <= 128; i++) {
+    printf("%02x\n", firstblock[i]);
+  }
+  for (int i = sizeof(struct header) - 1; i <= 128; i++) {
+    printf("%02x\n", secondblock[i]);
+  }
+
+  return 0;
+}
