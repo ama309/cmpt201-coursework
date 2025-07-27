@@ -1,21 +1,3 @@
-/*
-Questions to answer at top of server.c:
-(You should not need to change client.c)
-Understanding the Client:
-1. How is the client sending data to the server? What protocol?
-  it is using TCP protocol over IPV4 in socket(AF_INET, SOCK_STREAM, 0)
-2. What data is the client sending to the server?
-  it sends raw data in buffers that are interpreted as strings
-Understanding the Server:
-1. Explain the argument that the `run_acceptor` thread is passed as an argument.
-  aargs is passed to the thread and cast to become a local variable there
-2. How are received messages stored?
-  they are stored in a linked list where each node is a 1024 copied buffer
-3. What does `main()` do with the received messages?
-  it stores them until enough messages are read then prints them out in order
-4. How are threads used in this sample code?
-  the server uses threads to handle multiple clients and keep responsiveness
-*/
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -203,8 +185,8 @@ static void *run_acceptor(void *args) {
     atomic_store(&client_args[i].run, false);
     // TODO: Wait for the client thread and close its socket
     pthread_join(threads[i], NULL);
-    // if (close(client_args[i].cfd) == -1) {
-    //  perror("closing client socket");
+    //if (close(client_args[i].cfd) == -1) {
+     // perror("closing client socket");
     //}
   }
   if (close(sfd) == -1) {
@@ -244,7 +226,7 @@ int main() {
     if (count >= MAX_CLIENTS * NUM_MSG_PER_CLIENT) {
       break;
     }
-    // sleep(1);
+    sleep(1);
   }
 
   aargs.run = false;

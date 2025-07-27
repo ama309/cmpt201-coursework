@@ -3,7 +3,8 @@ Questions to answer at top of server.c:
 (You should not need to change client.c)
 Understanding the Client:
 1. How is the client sending data to the server? What protocol?
-  it is using TCP protocol over IPV4 in socket(AF_INET, SOCK_STREAM, 0)
+  it is using TCP protocol over IPV4 in socket(AF_INET,
+SOCK_STREAM) line
 2. What data is the client sending to the server?
   it sends raw data in buffers that are interpreted as strings
 Understanding the Server:

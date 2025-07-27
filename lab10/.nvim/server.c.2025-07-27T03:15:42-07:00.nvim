@@ -3,18 +3,14 @@ Questions to answer at top of server.c:
 (You should not need to change client.c)
 Understanding the Client:
 1. How is the client sending data to the server? What protocol?
-  it is using TCP protocol over IPV4 in socket(AF_INET, SOCK_STREAM, 0)
+  it is using TCP protocol over IPV4, specified in the socket(AF_INET, SOCK_STREAM) line
 2. What data is the client sending to the server?
-  it sends raw data in buffers that are interpreted as strings
+  it sends
 Understanding the Server:
 1. Explain the argument that the `run_acceptor` thread is passed as an argument.
-  aargs is passed to the thread and cast to become a local variable there
 2. How are received messages stored?
-  they are stored in a linked list where each node is a 1024 copied buffer
 3. What does `main()` do with the received messages?
-  it stores them until enough messages are read then prints them out in order
 4. How are threads used in this sample code?
-  the server uses threads to handle multiple clients and keep responsiveness
 */
 #include <arpa/inet.h>
 #include <errno.h>
