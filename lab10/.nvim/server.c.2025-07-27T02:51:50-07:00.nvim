@@ -231,7 +231,7 @@ int main() {
     if (count >= MAX_CLIENTS * NUM_MSG_PER_CLIENT) {
       break;
     }
-    // sleep(1);
+    sleep(1);
   }
 
   aargs.run = false;

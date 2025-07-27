@@ -182,11 +182,9 @@ static void *run_acceptor(void *args) {
   // Shutdown and cleanup
   for (int i = 0; i < num_clients; i++) {
     // TODO: Set flag to stop the client thread
-    for (int i = 0; i < num_clients; i++) {
-      atomic_store(&client_args[i].run, false);
-    }
     // TODO: Wait for the client thread and close its socket
     for (int i = 0; i < num_clients; i++) {
+      atomic_store(&client_args[i].run, false);
       pthread_join(threads[i], NULL);
       if (close(client_args[i].cfd) == -1) {
         perror("closing client socket");
@@ -231,7 +229,7 @@ int main() {
     if (count >= MAX_CLIENTS * NUM_MSG_PER_CLIENT) {
       break;
     }
-    // sleep(1);
+    sleep(1);
   }
 
   aargs.run = false;
