@@ -145,12 +145,12 @@ int verify(const char *message_path, const char *sign_path, EVP_PKEY *pubkey) {
     return 0;
   }
   // step 4
-  if (EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pubkey)) {
+  if (EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pubkey) != 1) {
     fprintf(stderr, "Verify error.\n");
     EVP_MD_CTX_free(ctx);
     return 0;
   }
-  if (EVP_DigestVerifyUpdate(ctx, message, msg_len)) {
+  if (EVP_DigestVerifyUpdate(ctx, message, msg_len) != 1) {
     fprintf(stderr, "Verify error.\n");
     EVP_MD_CTX_free(ctx);
     return 0;
